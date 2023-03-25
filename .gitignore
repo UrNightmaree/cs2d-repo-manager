@@ -1,2 +1,2 @@
 .luarocks
-./out/amalg-*.lua
+out/amalg-*.lua
