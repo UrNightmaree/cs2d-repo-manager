@@ -45,7 +45,7 @@ jobs:
             luacheck "$d"
             if [[ "$?" -gt 1 ]]; then
               exit "$?"
-            done
+            fi
           done
 
       - name: Build
