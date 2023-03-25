@@ -43,6 +43,9 @@ jobs:
           done
           for d in $(cat "$HOME/list-dirs.txt"); do
             luacheck "$d"
+            if [[ "$?" -gt 1 ]]; then
+              exit "$?"
+            done
           done
 
       - name: Build
