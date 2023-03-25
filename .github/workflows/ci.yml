@@ -39,7 +39,7 @@ jobs:
       - name: Lint
         run: |
           for p in ${{ steps.amc-files.outputs.all_changed_and_modified_files }}; do
-            echo -e "$p\n" >> $HOME/list-dirs.txt
+            echo -e "$(dirname "$p")\n" >> $HOME/list-dirs.txt
           done
           for d in $(cat "$HOME/list-dirs.txt"); do
             exitcode="$(luacheck "$d" || echo $?)"
