@@ -24,6 +24,27 @@ dependencies = {
             name = "lua"
          }
       }
+   },
+   ["rxi-json"] = {
+      ["dbf4b2d-0"] = {
+         {
+            constraints = {
+               {
+                  op = ">=",
+                  version = {
+                     5, 1, string = "5.1"
+                  }
+               },
+               {
+                  op = "<",
+                  version = {
+                     5, 5, string = "5.5"
+                  }
+               }
+            },
+            name = "lua"
+         }
+      }
    }
 }
 modules = {
@@ -50,6 +71,9 @@ modules = {
    },
    ["amalg.teal.transform"] = {
       "amalg/0.8-1"
+   },
+   json = {
+      "rxi-json/dbf4b2d-0"
    }
 }
 repository = {
@@ -70,6 +94,18 @@ repository = {
                ["amalg.luasrcdiet.transform"] = "amalg/luasrcdiet/transform.lua",
                ["amalg.moonscript.transform"] = "amalg/moonscript/transform.lua",
                ["amalg.teal.transform"] = "amalg/teal/transform.lua"
+            }
+         }
+      }
+   },
+   ["rxi-json"] = {
+      ["dbf4b2d-0"] = {
+         {
+            arch = "installed",
+            commands = {},
+            dependencies = {},
+            modules = {
+               json = "json.lua"
             }
          }
       }

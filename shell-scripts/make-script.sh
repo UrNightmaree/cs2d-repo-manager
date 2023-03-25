@@ -21,7 +21,7 @@ amalg() {
 if [[ ! -e "$root_dir/.luarocks/bin/amalg.lua" ]]; then
     lr_ins amalg
 fi
-lr_deps_ins "$root_dir/scripts/$script_name/$script_name-deps-1.rockspec"
+lr_deps_ins "$root_dir/scripts/$script_name/${script_name,,}-deps-1.rockspec"
 
 eval "$(cat "$root_dir/scripts/$script_name/info.sh")"
 
