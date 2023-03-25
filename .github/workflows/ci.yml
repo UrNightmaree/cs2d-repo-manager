@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "lua/**"
+  pull_request:
+    paths:
+      - "lua/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Lua
+        uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: "5.1.5"
+
+      - name: Setup Luarocks
+        uses: hishamhm/gh-actions-luarocks@master
+      
+      - name: Install build deps
+        run: |
+          luarocks install luacheck
+
+      - name: Get added, modified and changed files
+        id: amc-files
+        uses: tj-actions/changed-files@v35
+        with:
+          files: lua/**
+
+      - name: Lint
+        run: |
+          for p in ${{ steps.amc-files.output.all_changed_and_modified_files }}
+            echo -e "$p\n" >>> $HOME/list-dirs.txt
+          done
+          for d in $(cat "$HOME/list-dirs.txt"); do
+            luacheck "$d"
+          done
+
+      - name: Build
+        run: |
+          for paths 
+          for d in $(cat "$HOME/list-dirs.txt"); do
+            script_name="${d##*/}"
+            scripts/make-script.sh "$script_name"
+          done
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: amalg-out
+          path: out/*
