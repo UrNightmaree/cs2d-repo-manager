@@ -38,7 +38,7 @@ jobs:
 
       - name: Lint
         run: |
-          for p in ${{ steps.amc-files.output.all_changed_and_modified_files }}
+          for p in ${{ steps.amc-files.outputs.all_changed_and_modified_files }}; do
             echo -e "$p\n" >> $HOME/list-dirs.txt
           done
           for d in $(cat "$HOME/list-dirs.txt"); do
