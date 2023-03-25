@@ -42,9 +42,9 @@ jobs:
             echo -e "$p\n" >> $HOME/list-dirs.txt
           done
           for d in $(cat "$HOME/list-dirs.txt"); do
-            luacheck "$d"
-            if [[ "$?" -gt 1 ]]; then
-              exit "$?"
+            exitcode="$(luacheck "$d" || echo $?)"
+            if [[ "$exitcode" -gt 1 ]]; then
+              exit $?
             fi
           done
 
