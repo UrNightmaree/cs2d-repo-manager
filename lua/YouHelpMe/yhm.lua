@@ -75,3 +75,4 @@ function YHM_spawn_hook(id)
         msg2(id,"\169255026026Tips: "..team_config[math.random(n)].."@C")
     end
 end
+
