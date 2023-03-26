@@ -40,7 +40,7 @@ jobs:
         run: |
           for p in ${{ steps.amc-files.outputs.all_changed_and_modified_files }}; do
             dir="$(dirname "$p")"
-            if [[ ! ${blacklists[${p -z "$old_dir" || ! "$dir" = "$old_dir" ]]; then
+            if [[ -z "$old_dir" || -n ${blacklists[$p]} && ! "$dir" = "$old_dir" ]]; then
               echo "$dir" > $HOME/list-dirs.txt
             fi
             old_dir="$dir"
