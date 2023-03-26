@@ -38,25 +38,27 @@ jobs:
 
       - name: Lint
         run: |
+          changed_dirs=""
           for p in ${{ steps.amc-files.outputs.all_changed_and_modified_files }}; do
             dir="$(dirname "$p")"
             if [[ -z "$old_dir" || -n ${blacklists[$p]} && ! "$dir" = "$old_dir" ]]; then
-              echo "$dir" > $HOME/list-dirs.txt
+              changed_dirs+="$dir"$'\n'
             fi
             old_dir="$dir"
           done
 
           # verify changed directories
-          echo "========= Changed directories ========="
-          cat "$HOME/list-dirs.txt" || echo "No changed directories"
+          echo "${changed_dirs\u007C-No changed directories}"
 
-          for d in $(cat "$HOME/list-dirs.txt"); do
+          echo "changed_dirs='$changed_dirs'" >> $GITHUB_ENV
+
+          for d in $changed_dirs;
             luacheck "$d"
           done
 
       - name: Build
         run: |
-          for d in $(cat "$HOME/list-dirs.txt"); do
+          for d in $changed_dirs; do
             script_name="${d##*/}"
             scripts/make-script.sh "$script_name"
           done
