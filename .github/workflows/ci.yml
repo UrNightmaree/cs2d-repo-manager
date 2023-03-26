@@ -52,7 +52,7 @@ jobs:
 
           echo "changed_dirs='$changed_dirs'" >> $GITHUB_ENV
 
-          for d in $changed_dirs;
+          for d in $changed_dirs; do
             luacheck "$d"
           done
 
