@@ -47,7 +47,7 @@ function YHM:get_all_messages()
         if i <= n then
             if j == jn then
                j = j + 1
-               jn = table.maxn(tmp[j])
+               jn = table.maxn(tmp[j]) -- luacheck: ignore
             end
             return tmp[j][i]
         end
