@@ -48,7 +48,7 @@ jobs:
           done
 
           # verify changed directories
-          echo "${changed_dirs\u007C-No changed directories}"
+          echo "${changed_dirs:-No changed directories}"
 
           echo "changed_dirs='$changed_dirs'" >> $GITHUB_ENV
 
