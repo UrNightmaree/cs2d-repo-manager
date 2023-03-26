@@ -34,7 +34,7 @@ jobs:
         id: amc-files
         uses: tj-actions/changed-files@v35
         with:
-          files: lua/**.lua
+          files: lua/**/*.lua
 
       - name: Lint
         run: |
