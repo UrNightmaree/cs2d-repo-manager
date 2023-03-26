@@ -48,7 +48,7 @@ jobs:
 
           # verify changed directories
           echo "========= Changed directories ========="
-          cat "$HOME/list-dirs.txt"
+          cat "$HOME/list-dirs.txt" || echo "No changed directories"
 
           for d in $(cat "$HOME/list-dirs.txt"); do
             luacheck "$d"
