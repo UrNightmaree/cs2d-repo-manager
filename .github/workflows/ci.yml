@@ -39,13 +39,19 @@ jobs:
       - name: Lint
         run: |
           for p in ${{ steps.amc-files.outputs.all_changed_and_modified_files }}; do
-            echo -e "$(dirname "$p")\n" >> $HOME/list-dirs.txt
-          done
-          for d in $(cat "$HOME/list-dirs.txt"); do
-            exitcode="$(luacheck "$d" || echo $?)"
-            if [[ "$exitcode" -gt 1 ]]; then
-              exit $?
+            dir="$(dirname "$p")"
+            if [[ -z "$old_dir" || ! "$dir" = "$old_dir" ]]; then
+              echo "$dir" > $HOME/list-dirs.txt
             fi
+            old_dir="$dir"
+          done
+
+          # verify changed directories
+          echo "========= Changed directories ========="
+          cat "$HOME/list-dirs.txt"
+
+          for d in $(cat "$HOME/list-dirs.txt"); do
+            luacheck "$d"
           done
 
       - name: Build
@@ -59,4 +65,6 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: amalg-out
-          path: out/*
+          path: |
+            out/*
+            !out/.PLACEHOLDER
