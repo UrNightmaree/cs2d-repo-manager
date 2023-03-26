@@ -57,12 +57,13 @@ jobs:
           done
 
       - name: Build
-        if: env.changed_dirs != ''
         run: |
-          for d in $changed_dirs; do
-            script_name="${d##*/}"
-            scripts/make-script.sh "$script_name"
-          done
+          if [[ -n "$changed_dirs" ]]; then
+            for d in $changed_dirs; do
+              script_name="${d##*/}"
+              scripts/make-script.sh "$script_name"
+            done
+          else echo "Skipped."; fi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
