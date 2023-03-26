@@ -34,13 +34,13 @@ jobs:
         id: amc-files
         uses: tj-actions/changed-files@v35
         with:
-          files: lua/**
+          files: lua/**.lua
 
       - name: Lint
         run: |
           for p in ${{ steps.amc-files.outputs.all_changed_and_modified_files }}; do
             dir="$(dirname "$p")"
-            if [[ -z "$old_dir" || ! "$dir" = "$old_dir" ]]; then
+            if [[ ! ${blacklists[${p -z "$old_dir" || ! "$dir" = "$old_dir" ]]; then
               echo "$dir" > $HOME/list-dirs.txt
             fi
             old_dir="$dir"
