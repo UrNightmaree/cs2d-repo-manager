@@ -57,6 +57,7 @@ jobs:
           done
 
       - name: Build
+        if: env.changed_dirs != ''
         run: |
           for d in $changed_dirs; do
             script_name="${d##*/}"
