@@ -9,6 +9,7 @@ YouHelpMe (YHM) is a CS2D Lua script for showing hint and tips upon spawning.
    - [`YHM:get_config`](#yhmget_config)
    - [`YHM:overwrite_config`](#yhmoverwrite_config)
  - [TODO](#todo)
+ - [Changelog](#changelog)
 
 ## API
 
@@ -72,3 +73,8 @@ If omit `tbl`, it'll set the config as empty table.
  - [ ] Custom color if prefixed with Lua patttern `^(%w+):`
  - [ ] Use CS2D command `hudtxt2` instead `msg2` function
  - [ ] Release version `1.0`
+
+## Changelog
+
+### v0.1
+- Created YouHelpMe
