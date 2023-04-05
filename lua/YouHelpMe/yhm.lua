@@ -8,6 +8,33 @@
 
 local json = require "json"
 
+--> Misc. funcs <--
+
+--- @param str string
+--- @return string
+local function append_0_rgb(str)
+    local rgb = {}
+    for s in str:gmatch "([^,]+)" do
+        rgb[#rgb+1] = #s == 1 and "00"..s or
+                      #s == 2 and "0"..s or s
+    end
+    return table.concat(rgb)
+end
+
+--- @param cmd string
+--- @return fun(...: any)
+local function p(cmd)
+    return function(...)
+        local p_cmd = cmd
+        for i = 1,select('#',...) do
+            local v = select(i,...)
+
+            p_cmd = p_cmd..' "'..v..'"'
+        end
+        parse(p_cmd)
+    end
+end
+
 --> API stuff <--
 
 --- @class YHM
@@ -37,34 +64,41 @@ function YHM:get_messages_from_team(team_id)
     local n = table.maxn(self._config_table[tostring(team_id)])
     return function()
         i = i + 1
-        if i <= n then return self._config_table[tostring(team_id)][i] end
+        if i <= n then return self._config_table.team[tostring(team_id)][i] end
     end
 end
 
 --[[
-Get messages from all team (T, CT, VIP), return an iterator function.
+Get config messages from all team (T, CT, VIP), return an iterator function.
 ]]
---- @return function
+--- @return fun(): integer,string
 --- @see YHM.get_messages_from_team
 function YHM:get_all_messages()
     local tmp = {}
-    for _,v in pairs(self._config_table) do
-        tmp[#tmp+1] = v
+    local tmp_team = {}
+    for i,v in pairs(self._config_table.team) do
+        tmp[tonumber(i)] = v
+        tmp_team[#tmp_team+1] = tonumber(i)
     end
 
-    local i = 0
-    local j = 1
-    local n = table.maxn(tmp)
+    local t = 1
+    local m = 0
+
+    --- @return integer
+    --- @return string
     return function()
-        local jn = table.maxn(tmp[j])
-        i = i + 1
-        if i <= n then
-            if j == jn then
-               j = j + 1
-               jn = table.maxn(tmp[j]) -- luacheck: ignore
+        local mn = table.maxn(tmp[t] or {})
+        m = m + 1
+        if m <= mn then
+            local tmp_m = m
+            local tmp_t = t
+            if m == mn then
+                m = 0
+                t = t + 1
+                mn = table.maxn(tmp[tmp_t]) -- luacheck: ignore
             end
-            return tmp[j][i]
-        end
+            return tmp_team[tmp_t], tmp[tmp_t][tmp_m]
+        end --- @diagnostic disable-line: missing-return
     end
 end
 
@@ -89,16 +123,37 @@ end
 
 --> Main section <--
 
-addhook("spawn","YHM_spawn_hook")
+local config_colors = YHM._config_table.colors or {}
+local default_no_color = append_0_rgb(config_colors["no_color"] or "255,255,255")
+local default_tips_color = append_0_rgb(config_colors["tips"] or "255,145,145")
+local default_hint_color = append_0_rgb(config_colors["hint"] or "255,239,145")
 
+function YHM_clear_hudtxt2(id)
+    p"hudtxt2" (id,10,"",0,0)
+end
+
+addhook("spawn","YHM_spawn_hook")
 function YHM_spawn_hook(id)
-    math.randomseed(os.time())
+--    math.randomseed(os.time())
 
     local team_id = player(id,"team")
-    local team_config = YHM._config_table[tostring(team_id)]
+    local team_config = YHM._config_table.team[tostring(team_id)]
 
     if team_config then
         local n = table.maxn(team_config)
-        msg2(id,"\169255026026Tips: "..team_config[math.random(n)].."@C")
+        ---@type string
+        local yhm_msg = team_config[math.random(1,n)]
+        local prefix_msg = (yhm_msg:match "^(%w+):" or ""):lower()
+
+        p"hudtxt2" (id,10,
+                   "\169"..
+                   (prefix_msg == "tips" and default_tips_color or
+                    prefix_msg == "hint" and default_hint_color or
+                    config_colors[prefix_msg] and append_0_rgb(config_colors[prefix_msg]) or
+                    default_no_color)
+                    ..yhm_msg,
+                   850/2,480/2,
+                   1,1,18)
+        timer(3000,"YHM_clear_hudtxt2",tostring(id))
     end
 end

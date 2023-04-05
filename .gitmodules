@@ -1,0 +1,7 @@
+[submodule "lua/YouHelpMe/deps/json-lua"]
+	path = lua/YouHelpMe/deps/json-lua
+	url = https://github.com/appgurueu/json.lua
+	branch = fix-write-complexity
+[submodule "deps/lua-amalg"]
+	path = deps/lua-amalg
+	url = https://github.com/siffiejoe/lua-amalg/
