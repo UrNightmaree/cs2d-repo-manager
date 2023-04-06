@@ -157,5 +157,3 @@ function YHM_spawn_hook(id)
         timer(3000,"YHM_clear_hudtxt2",tostring(id))
     end
 end
-
---
