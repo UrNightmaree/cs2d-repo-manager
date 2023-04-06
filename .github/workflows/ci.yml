@@ -55,7 +55,7 @@ jobs:
         run: |
           if [[ -n "$changed_files" ]]; then
             for f in $changed_files; do
-              script_name="$(sed -E 's#lua/([a-zA-Z0-9]+)/#\1#')"
+              script_name="$(sed -E 's#lua/([a-zA-Z0-9]+)/#\1#' <<< "$f")"
               scripts/make-script.sh "$script_name"
             done
           else echo "Skipped."; fi
