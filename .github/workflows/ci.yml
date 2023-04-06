@@ -40,7 +40,7 @@ jobs:
         run: |
           changed_files=""
           for p in ${{ steps.amc-files.outputs.all_changed_and_modified_files }}; do
-            changed_file="$p"$'\n'
+            changed_files="$p"$'\n'
           done
 
           # verify changed directories
