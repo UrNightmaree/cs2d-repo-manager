@@ -134,7 +134,7 @@ end
 
 addhook("spawn","YHM_spawn_hook")
 function YHM_spawn_hook(id)
---    math.randomseed(os.time())
+---    math.randomseed(os.time())
 
     local team_id = player(id,"team")
     local team_config = YHM._config_table.team[tostring(team_id)]
