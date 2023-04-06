@@ -153,7 +153,7 @@ function YHM_spawn_hook(id)
                     default_no_color)
                     ..yhm_msg,
                    850/2,480/2,
-                   1,1,18)
+                   0,0,18)
         timer(3000,"YHM_clear_hudtxt2",tostring(id))
     end
 end
