@@ -55,8 +55,8 @@ jobs:
         run: |
           if [[ -n "$changed_files" ]]; then
             for f in $changed_files; do
-              : "${f%%*/}"
-              script_name="${_##/*}"
+              : "${f%%/*}"
+              script_name="${_##*/}"
               scripts/make-script.sh "$script_name"
             done
           else echo "Skipped."; fi
