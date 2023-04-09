@@ -40,7 +40,10 @@ end
 --- @class YHM
 --- @field private _config_table table
 --- @field _version string Version of YHM (in semver)
-YHM = { _version = "0.1", _config_table = {} }
+YHM = { _version = "0.2", _config_table = {
+    messages = { T = {}, CT = {} },
+    colorMessage = {}
+}}
 
 local f = io.open("sys/yhm-config.json",'r')
 
@@ -49,62 +52,88 @@ if f then
     f:close()
 end
 
---[[
-Get messages from team, return an iterator function.
-]]
---- @param team_id integer
---- @return function
---- @see YHM.get_all_messages
-function YHM:get_messages_from_team(team_id)
-    if team_id < 1 or team_id > 3 then
-        error("invalid team id: "..team_id)
-    end
+local config_colors = YHM._config_table.colorMessage
+config_colors["defaultColor"] = config_colors["defaultColor"] or "255,255,255"
+config_colors["tips"] = config_colors["tips"] or "255,145,145"
+config_colors["hint"] = config_colors["hint"] or "255,239,145"
 
+--[[
+Return an iterator function which iterate team messages. Iterator function return the message of the team.
+]]
+--- @param team string
+--- @return fun(): string
+--- @see YHM.get_all_messages
+function YHM:get_messages_from_team(team)
     local i = 0
-    local n = table.maxn(self._config_table[tostring(team_id)])
+    local n = #self._config_table.messages[team]
+    --- @return string
     return function()
         i = i + 1
-        if i <= n then return self._config_table.team[tostring(team_id)][i] end
+        --- @diagnostic disable-next-line:missing-return
+        if i <= n then return self._config_table.messages[team][i] end
     end
 end
 
 --[[
-Get config messages from all team (T, CT, VIP), return an iterator function.
+Return an iterator function which iterate all messages in `messages`, even if it's `T` or `CT`. Iterator function return name of the team and the message.
 ]]
---- @return fun(): integer,string
+--- @return fun(): string, string
 --- @see YHM.get_messages_from_team
 function YHM:get_all_messages()
     local tmp = {}
-    local tmp_team = {}
-    for i,v in pairs(self._config_table.team) do
-        tmp[tonumber(i)] = v
-        tmp_team[#tmp_team+1] = tonumber(i)
+    for i,v in pairs(self._config_table.messages) do
+        tmp[#tmp+1] = {i,v}
     end
 
-    local t = 1
-    local m = 0
-
-    --- @return integer
+    local i = 0
+    local n = #tmp
+    --- @return string
     --- @return string
     return function()
-        local mn = table.maxn(tmp[t] or {})
-        m = m + 1
-        if m <= mn then
-            local tmp_m = m
-            local tmp_t = t
-            if m == mn then
-                m = 0
-                t = t + 1
-                mn = table.maxn(tmp[tmp_t]) -- luacheck: ignore
-            end
-            return tmp_team[tmp_t], tmp[tmp_t][tmp_m]
-        end --- @diagnostic disable-line: missing-return
+        i = i + 1
+        --- @diagnostic disable-next-line:missing-return
+        if i <= n then return tmp[i][1], tmp[i][2] end
     end
 end
 
 --[[
-Overwrite the config, replaces current config if `sys/yhm-config.json` found.
-If omit `tbl`, it'll set the config as empty table.
+Return RGB color based on prefix. If passed boolean `true` on append_zero, append zero on each comma-separated value and return RGB color without comma separator.
+]]
+--- @param prefix string
+--- @param append_zero? boolean
+--- @return string
+--- @see YHM.get_all_colors
+function YHM:get_color_by_prefix(prefix, append_zero)
+    return not append_zero and
+        self._config_table.colorMessage[prefix] or
+        append_0_rgb(self._config_table.colorMessage[prefix])
+end
+
+--[[
+Return an iterator function which iterate over all `colorMessage` property. Iterator function returns prefix of the color and the RGB color value. If passed boolean `true` on append_zero, second return of iterator function appends zero on each comma-separated value and removes comma separator.
+]]
+--- @param append_zero? boolean
+--- @return fun(): string, string
+--- @see YHM.get_color_by_prefix
+function YHM:get_all_colors(append_zero)
+    local tmp = {}
+    for i,v in pairs(self._config_table.colorMessage) do
+        tmp[#tmp+1] = {i, not append_zero and v or append_0_rgb(v)}
+    end
+
+    local i = 0
+    local n = #tmp
+    --- @return string
+    --- @return string
+    return function()
+        i = i + 1
+        --- @diagnostic disable-next-line:missing-return
+        if i <= n then return tmp[i][1], tmp[i][2] end
+    end
+end
+
+--[[
+Overwrite the current loaded config if `sys/yhm-config.json` found, if not load new config.
 ]]
 --- @param tbl? any
 --- @see YHM.get_config
@@ -113,9 +142,9 @@ function YHM:overwrite_config(tbl)
 end
 
 --[[
-Get the current config.
+Get the current loaded config if `sys/yhm-config.json` found, if not return nil or new loaded config by `YHM.overwrite_config`.
 ]]
---- @return table
+--- @return table|nil
 --- @see YHM.overwrite_config
 function YHM:get_config()
     return self._config_table
@@ -123,10 +152,7 @@ end
 
 --> Main section <--
 
-local config_colors = YHM._config_table.colors or {}
-local default_no_color = append_0_rgb(config_colors["no_color"] or "255,255,255")
-local default_tips_color = append_0_rgb(config_colors["tips"] or "255,145,145")
-local default_hint_color = append_0_rgb(config_colors["hint"] or "255,239,145")
+local team = {"T","CT"}
 
 function YHM_clear_hudtxt2(id)
     p"hudtxt2" (id,10,"",0,0)
@@ -134,26 +160,23 @@ end
 
 addhook("spawn","YHM_spawn_hook")
 function YHM_spawn_hook(id)
----    math.randomseed(os.time())
+--    math.randomseed(os.time())
 
     local team_id = player(id,"team")
-    local team_config = YHM._config_table.team[tostring(team_id)]
+    local msg_config = YHM._config_table.messages[team[team_id]]
 
-    if team_config then
-        local n = table.maxn(team_config)
+    if msg_config then
+        local n = #msg_config
         ---@type string
-        local yhm_msg = team_config[math.random(1,n)]
+        local yhm_msg = msg_config[math.random(1,n)]
         local prefix_msg = (yhm_msg:match "^(%w+):" or ""):lower()
 
         p"hudtxt2" (id,10,
                    "\169"..
-                   (prefix_msg == "tips" and default_tips_color or
-                    prefix_msg == "hint" and default_hint_color or
-                    config_colors[prefix_msg] and append_0_rgb(config_colors[prefix_msg]) or
-                    default_no_color)
+                   append_0_rgb(config_colors[prefix_msg] or config_colors["defaultColor"])
                     ..yhm_msg,
-                   850/2,480/2,
-                   0,0,18)
+                   player(id,"screenw")/2,(player(id,"screenh")/2) - 180,
+                   1,1,18)
         timer(3000,"YHM_clear_hudtxt2",tostring(id))
     end
 end
