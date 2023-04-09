@@ -1,0 +1,51 @@
+{
+    "description": "Schema for yhm-config.json",
+    "properties": {
+        "messages": {
+            "markdownDescription": "Messages for T and CT.",
+            "properties": {
+                "T": {
+                    "default": [],
+                    "markdownDescription": "Messages for T (Terrorist) team.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "CT": {
+                    "default": [],
+                    "markdownDescription": "Messages for CT (Counter-Terrorist) team.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                }
+            }
+        },
+        "colorMessage": {
+            "markdownDescription": "Colors for each prefixed message.",
+            "properties": {
+                "defaultColor": {
+                    "default": "255,255,255",
+                    "type": "string"
+                },
+                "hint": {
+                    "default": "255,145,145",
+                    "type": "string"
+                },
+                "tips": {
+                    "default": "255,239,145",
+                    "type": "string"
+                }
+            },
+            "patternProperties": {
+                "^[a-z0-9]+$": {
+                    "default": "0,0,0",
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "type": "object",
+    "requires": ["messages"]
+}
