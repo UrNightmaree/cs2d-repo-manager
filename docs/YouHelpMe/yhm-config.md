@@ -60,10 +60,10 @@ Preset color for `"Hint:"` prefix.
 
 ---
 ### `colorMessage./^[a-z0-9]+$/`
-<sub>Note: `/^[a-z0-9]+$/` regex pattern restrict key to only use lower characters and number, see the [schema file](/schema/yhm-config.schema.json#L42-L45).</sub><br><br>
+<sub>Note: `/^[a-z0-9]+$/` regex pattern restrict key to only use lower characters and number, see the [schema file](/schema/yhm-config.schema.json#L42-L45) for context.</sub><br><br>
 
 | Type | Default |
 | :-: | :-: |
-| `String` | `"0,0,0"` |
+| `String` | `"255,255,255"` |
 
-A string containing comma-separated RGB value. If key does match with message prefix, use the key value (which is RGB color value) as the foreground color of that message.
+A string containing comma-separated RGB value. If key does match with message prefix, use the key value (which is RGB color value) as the foreground color of that message. (The default value is same as `defaultColor` value.)

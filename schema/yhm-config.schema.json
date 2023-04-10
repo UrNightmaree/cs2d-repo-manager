@@ -27,20 +27,23 @@
             "properties": {
                 "defaultColor": {
                     "default": "255,255,255",
+                    "markdownDescription": "The default color if prefix is not matched with any key.",
                     "type": "string"
                 },
                 "hint": {
                     "default": "255,145,145",
+                    "markdownDescription": "Preset for `Hint:` prefix.",
                     "type": "string"
                 },
                 "tips": {
                     "default": "255,239,145",
+                    "markdownDescription": "Preset for `Tips:` prefix.",
                     "type": "string"
                 }
             },
             "patternProperties": {
                 "^[a-z0-9]+$": {
-                    "default": "0,0,0",
+                    "default": "255,255,255",
                     "type": "string"
                 }
             }
