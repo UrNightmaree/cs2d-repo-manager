@@ -9,7 +9,7 @@ Dependencies for the build script:
 
 Remaining dependencies is installed automatically through Luarocks in build script.
 
-To build a script, you need to have the repo cloned and the dependencies installed (see above). After that change directory to the repo and run.
+To build a script, you need to have the repo cloned with `--recursive` flag (since this repo uses submodules) and the dependencies installed (see above). After that change directory to the repo and run.
 ```bash
 scripts/make-script.sh <script name>
 ```

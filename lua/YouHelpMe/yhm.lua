@@ -5,6 +5,8 @@
 --| YouHelpMe (YHM) is a CS2D Lua script for showing hint and tips upon spawning.
 --| Made just for fun and intended to be replacement for TipsSpawner.
 --|
+--| License can be found at EOF of this file.
+--|
 
 local json = require "json"
 
@@ -81,8 +83,10 @@ Return an iterator function which iterate all messages in `messages`, even if it
 --- @see YHM.get_messages_from_team
 function YHM:get_all_messages()
     local tmp = {}
-    for i,v in pairs(self._config_table.messages) do
-        tmp[#tmp+1] = {i,v}
+    for t,v in pairs(self._config_table.messages) do
+        for _,m in ipairs(v) do
+            tmp[#tmp+1] = {t,m}
+        end
     end
 
     local i = 0
@@ -133,7 +137,7 @@ function YHM:get_all_colors(append_zero)
 end
 
 --[[
-Overwrite the current loaded config if `sys/yhm-config.json` found, if not load new config.
+Get the current loaded config if `sys/yhm-config.json` found, if not return nil or return new loaded config by `YHM:overwrite_config`.
 ]]
 --- @param tbl? any
 --- @see YHM.get_config
@@ -142,7 +146,7 @@ function YHM:overwrite_config(tbl)
 end
 
 --[[
-Get the current loaded config if `sys/yhm-config.json` found, if not return nil or new loaded config by `YHM.overwrite_config`.
+Load a new config. If config from `sys/yhm-config.json` found, this function overwrite the loaded config (config file does not overwriten by this function).
 ]]
 --- @return table|nil
 --- @see YHM.overwrite_config
@@ -160,8 +164,6 @@ end
 
 addhook("spawn","YHM_spawn_hook")
 function YHM_spawn_hook(id)
---    math.randomseed(os.time())
-
     local team_id = player(id,"team")
     local msg_config = YHM._config_table.messages[team[team_id]]
 
@@ -180,3 +182,27 @@ function YHM_spawn_hook(id)
         timer(3000,"YHM_clear_hudtxt2",tostring(id))
     end
 end
+
+--| ==============================================================================
+--| The MIT License (MIT)
+--| 
+--| Copyright (c) 2023 UrNightmaree
+--| 
+--| Permission is hereby granted, free of charge, to any person obtaining a copy
+--| of this software and associated documentation files (the "Software"), to deal
+--| in the Software without restriction, including without limitation the rights
+--| to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+--| copies of the Software, and to permit persons to whom the Software is
+--| furnished to do so, subject to the following conditions:
+--| 
+--| The above copyright notice and this permission notice shall be included in all
+--| copies or substantial portions of the Software.
+--| 
+--| THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+--| IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+--| FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+--| AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+--| LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+--| OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+--| SOFTWARE.
+--| ==============================================================================
